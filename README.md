@@ -12,4 +12,4 @@ http://code.py40.com/pyqt5/14.html
 
 
 
-Email: chenyijun1015@126.com
+Email: chenyijunsz@163.com
