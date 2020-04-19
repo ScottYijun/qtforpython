@@ -1,13 +1,11 @@
 """"
-brief:工具栏
-工具栏提供了一个快速访问的入口。
+brief:子菜单
 author:chenyijun
 date:2020-01-26
 """
 
 import sys
-from PyQt5.QtWidgets import QMainWindow, QAction, qApp, QApplication
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMainWindow, QAction, QMenu, QApplication
 
 class Example(QMainWindow):
     def __init__(self):
@@ -15,18 +13,21 @@ class Example(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        exitAction = QAction(QIcon("qt.png"), "Exit", self)
-        exitAction.setShortcut("Ctrl+Q")
-        exitAction.triggered.connect(qApp.quit)
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('File')
+        impMenu = QMenu('Import', self)
+        impAct = QAction('Import mail', self)
+        impMenu.addAction(impAct)
 
-        self.toolbar = self.addToolBar("Exit")
-        self.toolbar.addAction(exitAction)
+        newAct = QAction('New', self)
+        fileMenu.addAction(newAct)
+        fileMenu.addMenu(impMenu)
+
         self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle("Toolbar")
+        self.setWindowTitle('Submenu')
         self.show()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Example()
     sys.exit(app.exec_())
-

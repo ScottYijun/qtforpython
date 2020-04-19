@@ -1,4 +1,5 @@
 """"
+fileName:simple.py
 brief:一个PyQt5的简单的例子
 author:chenyijun
 date:2020-01-25

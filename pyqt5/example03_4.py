@@ -1,13 +1,11 @@
 """"
-brief:把他们放在一起
-在本节的最后一个例子中,我们将创建一个菜单条,工具栏和状态栏的小窗口
+brief:钩选菜单
 author:chenyijun
 date:2020-01-26
 """
-
 import sys
-from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, qApp, QApplication
-from PyQt5.QtGui import QIcon
+
+from PyQt5.QtWidgets import QMainWindow, QAction, QApplication
 
 class Example(QMainWindow):
     def __init__(self):
@@ -15,26 +13,29 @@ class Example(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        textEdit = QTextEdit()
-        self.setCentralWidget(textEdit)
-        exitAction = QAction(QIcon("qt.png"), "Exit", self)
-        exitAction.setShortcut("Ctrl + Q")
-        exitAction.setStatusTip("Exit application")
-        exitAction.triggered.connect(self.close)
-        self.statusBar()
-
+        self.statusbar = self.statusBar()
+        self.statusbar.showMessage('Ready')
         menubar = self.menuBar()
-        fileMenu = menubar.addMenu("&File")
-        fileMenu.addAction(exitAction)
+        viewMenu = menubar.addMenu('View')
 
-        toolbar = self.addToolBar('Exit')
-        toolbar.addAction(exitAction)
+        viewStatAct = QAction('View statusbar', self, checkable=True)
+        viewStatAct.setStatusTip('View statusbar')
+        viewStatAct.setChecked(True)
+        viewStatAct.triggered.connect(self.toggleMenu)
+        viewMenu.addAction(viewStatAct)
 
-        self.setGeometry(300, 300, 350, 250)
-        self.setWindowTitle("Main Window")
+        self.setGeometry(300, 300, 300, 200)
+        self.setWindowTitle('Check menu')
         self.show()
 
-if __name__ == "__main__":
+    def toggleMenu(self, state):
+        if state:
+            self.statusbar.show()
+        else:
+            self.statusbar.hide()
+
+if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Example()
     sys.exit(app.exec_())
+

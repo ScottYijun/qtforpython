@@ -29,7 +29,7 @@ class Example(QMainWindow):
         # 添加事件
         fileMenu.addAction(exitAction)
         self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle("Menubar")
+        self.setWindowTitle("Simple menu")
         self.show()
 
 if __name__ == "__main__":

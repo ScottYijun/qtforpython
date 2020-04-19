@@ -33,10 +33,3 @@ if __name__ == "__main__":
     ex = Example();
     sys.exit(app.exec_())
 
-
-
-
-
-
-
-
