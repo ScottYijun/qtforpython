@@ -3,6 +3,7 @@ brief:pyqt5图片管理系统。
         数据库的初始化
 date:2020-07-18
 author:chenyijun
+version: python V3.8.1 pyqt5 V5.14.0
 """
 #https://blog.csdn.net/qiqiyingse/category_9285730.html
 #https://blog.csdn.net/weixin_38312031/category_9274444.html
@@ -12,12 +13,21 @@ import os.path
 import sqlite3
 import hashlib
 
-home = os.path.expanduser('~')
+# home = os.path.expanduser('~') #获取当前用户目录
+# print(home) # C:\Users\username
+# if '.BookManagerSystem' not in os.listdir(home):
+#     os.mkdir(os.path.join(home, '.BookManagerSystem'))
+#
+# dbpath = os.path.join(home, '.BookManagerSystem', 'LibraryManagement.db')
+# print(dbpath) # C:\Users\username\.BookManagerSystem\LibraryManagement.db
 
-if '.BookManagerSystem' not in os.listdir(home):
-    os.mkdir(os.path.join(home, '.BookManagerSystem'))
+apath = os.path.abspath('.') #获取当前工作目录
+print(apath)
+if 'db' not in os.listdir(apath):
+    os.mkdir(os.path.join(apath, 'db'))
 
-dbpath = os.path.join(home, '.BookManagerSystem', 'LibraryManagement.db')
+dbpath = os.path.join(apath, 'db', 'LibraryManagement.db')
+print(dbpath)
 
 createUserTableString = """
 CREATE TABLE IF NOT EXISTS user(
@@ -39,7 +49,7 @@ CREATE TABLE IF NOT EXISTS User_Book(
 )"""
 
 createBookTableString = """
-CREATE ABLE IF NOT EXISTS Book(
+CREATE TABLE IF NOT EXISTS Book(
     BookName VARCHAR(30),
     BookID CHAR(6),
     Auth VARCHAR(20),
@@ -108,18 +118,18 @@ class UserDbManager(DbManager):
         hl = hashlib.md5()  #
         hl.update(password.encode(encoding = 'utf-8'))
         md5password = hl.hexdigest()
-        self.addAdminUser('admin', 'Fengqi', md5password)   #
+        self.addAdminUser('admin', 'scott', md5password)
 
         password = 'user123'
         hl = hashlib.md5()  #
         hl.update(password.encode(encoding = 'utf-8'))
         md5password = hl.hexdigest()
-        self.addUser('user000000', 'user000000', md5password)   #
+        self.addUser('user000000', 'user000000', md5password)
 
     def addUser(self, userid, Name, Password, IsAdmin = 0):
         """添加普通用户"""
         insertData = self.cursor.execute("""INSERT INTO user
-                    (userid, Name, Password, IsAdmin, TimesBorrowed, NumBorrowed) VALUE 
+                    (userid, Name, Password, IsAdmin, TimesBorrowed, NumBorrowed) VALUES 
                     ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}')
                     """.format(userid, Name, Password, IsAdmin, 0, 0))
         self.db.commit()
@@ -130,17 +140,22 @@ class UserDbManager(DbManager):
 
     def querybyUserid(self, userid):
         fetchedData = self.cursor.execute("SELECT * FROM user WHERE userid = '%s'" % (userid))
-        #a=fetchedData.fetchall()#通过fetchall接受全部数据，是一个list,list的每个元素是tuple类型数据
+        byUserid = fetchedData.fetchall()#通过fetchall接受全部数据，是一个list,list的每个元素是tuple类型数据
+        print(byUserid)
         return fetchedData.fetchall()
 
     def getAdmineUserInfo(self):
         """获取管理员用户"""
         fetchedData = self.cursor.execute("SELECT userid, Name FROM user WHERE IsAdmin = 1")
+        adminUser = fetchedData.fetchall()  # 通过fetchall接受全部数据，是一个list,list的每个元素是tuple类型数据
+        print(adminUser)
         return fetchedData
 
     def getUserinfo(self):
         """获取一般用户"""
-        fetchedData = self.cursor.execute("SELECT userid, Name FORM user WHERE IsAdmin = 0")
+        fetchedData = self.cursor.execute("SELECT userid, Name FROM user WHERE IsAdmin = 0")
+        normalUser = fetchedData.fetchall()  # 通过fetchall接受全部数据，是一个list,list的每个元素是tuple类型数据
+        print(normalUser)
         return fetchedData
 
     def updatePassword(self, password, userid):
@@ -204,10 +219,10 @@ class BookDbManager(DbManager):
     def addBOOK(self, BookName, BookID, Auth, Category, Publisher, PublishTime, NumStorage, NumCanBorrow, NumBorrowed):
         """添加书籍"""
         insertData = self.cursor.execute("""INSERT INTO Book
-                    (BookName, BookID, Auth, Category, Pushlisher, Publisher, publishTime, NumStorage, NumCanBorrow, NumBorrowed) VALUES
+                    (BookName, BookID, Auth, Category, Publisher, publishTime, NumStorage, NumCanBorrow, NumBorrowed) VALUES
                     ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}')
                     """.format(BookName, BookID, Auth, Category, Publisher, PublishTime, NumStorage, NumCanBorrow, NumBorrowed))
-        self.db.commid()
+        self.db.commit()
 
     def dropBook(self, bookId):
         insertData = self.cursor.execute("DELETE FROM Book WHERE BookID = '%s'" % (bookId))
@@ -224,7 +239,7 @@ class BookDbManager(DbManager):
 
     def getBookinfo(self):
         """获得所有书籍"""
-        fetchedData = self.cursor.execute("SETECT * form Book")
+        fetchedData = self.cursor.execute("SELECT * FROM Book")
         return fetchedData.fetchall()
 
     def querybyBookID(self, BookID):
@@ -232,7 +247,7 @@ class BookDbManager(DbManager):
         return fetchedData.fetchall()
 
     def queryBookByKeywords(self, keywords):
-        fetchedData = self.cursor.execute("SELECT * from Book ORDER BY %s limit %s, %s" % (keywords, 0, 5))
+        fetchedData = self.cursor.execute("SELECT * FROM Book ORDER BY %s limit %s, %s" % (keywords, 0, 5))
         return fetchedData.fetchall()
 
     def borrowOrReturnBook(self, BookID, borrowflag = 1):
@@ -313,9 +328,9 @@ def testuserdb():
     userDb.addUser('Test1', 'BBB', '123456')
     userDb.addUser('Test2', 'CCC', '123456')
     userDb.getAdmineUserInfo()
-    userDb.getUser()
-    userDb.queryUser('admins')
-    userDb.queryUser('admin')
+    userDb.getUserinfo()
+    userDb.querybyUserid('admins')
+    userDb.querybyUserid('admin')
 
 def testAddDropBookData():
     userDb = AddOrDropManager()
@@ -335,7 +350,7 @@ def testBookDB():
     else:
         print("书籍不存在，直接插入")
         userDb.addBOOK('力学3',   'IS1006'  ,'刘斌3',  '教育',  '中国科学技术大学', '1999-01-01',  '34' , '34' , '1')
-    allbook = userDb.getBookInfo()
+    allbook = userDb.getBookinfo()
 
     print('all book length = %d' % len(allbook))
     for book in allbook:
@@ -349,10 +364,14 @@ def testBookDB():
     keybook = userDb.queryBookByKeywords('Auth')
     print(keybook)
 
-if __name__ == '__name__':
+if __name__ == '__main__':
+    print("test start()====================")
     testuserdb()
+    print("testuserdb()====================")
     testAddDropBookData()
+    print("testAddDropBookData()====================")
     testBookDB()
+    print("testBookDB()====================")
 
 
 
