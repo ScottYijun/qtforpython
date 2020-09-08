@@ -1,3 +1,15 @@
+""""
+brief:注册
+date:2020-07-19
+author:chenyijun
+version: python V3.8.1 pyqt5 V5.14.0
+"""
+
+#https://www.cnblogs.com/hhh5460/p/5173645.html
+#https://blog.csdn.net/qiqiyingse/category_9285730.html
+#https://blog.csdn.net/weixin_38312031/category_9274444.html
+
+
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -5,6 +17,8 @@ from PyQt5.QtCore import *
 import qdarkstyle
 from PyQt5.QtSql import *
 import hashlib
+from initDB2 import UserDbManager #从initDB.py文件中导入UserDbManager类
+import images #这是本地资源包，存放的图片资源，
 
 
 class SignUpWidget(QWidget):
@@ -12,29 +26,32 @@ class SignUpWidget(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.resize(900, 600)
+        self.setWindowTitle("欢迎登录图书馆管理系统")
         self.setUpUI()
+        self.userdb = UserDbManager()
 
     def setUpUI(self):
-        self.resize(900, 600)
-        self.setWindowTitle("欢迎登陆图书馆管理系统")
-        self.signUpLabel = QLabel("注   册")
-        self.signUpLabel.setAlignment(Qt.AlignCenter)
-        # self.signUpLabel.setFixedWidth(300)
-        self.signUpLabel.setFixedHeight(100)
         font = QFont()
         font.setPixelSize(36)
         lineEditFont = QFont()
         lineEditFont.setPixelSize(16)
-        self.signUpLabel.setFont(font)
 
         self.layout = QVBoxLayout()
-        self.layout.addWidget(self.signUpLabel, Qt.AlignHCenter)
         self.setLayout(self.layout)
+        self.signUpLabel = QLabel("注   册")
+        self.signUpLabel.setAlignment(Qt.AlignCenter)
+        #self.signUpLabel.setFixedWidth(300)
+        self.signUpLabel.setFixedHeight(100)
+        self.signUpLabel.setFont(font)
+        self.layout.addWidget(self.signUpLabel, Qt.AlignHCenter)
+
         # 表单，包括学号，姓名，密码，确认密码
         self.formlayout = QFormLayout()
         font.setPixelSize(18)
+
         # Row1
-        self.studentIdLabel = QLabel("学    号: ")
+        self.studentIdLabel = QLabel("学    号:")
         self.studentIdLabel.setFont(font)
         self.studentIdLineEdit = QLineEdit()
         self.studentIdLineEdit.setFixedWidth(180)
@@ -44,7 +61,7 @@ class SignUpWidget(QWidget):
         self.formlayout.addRow(self.studentIdLabel, self.studentIdLineEdit)
 
         # Row2
-        self.studentNameLabel = QLabel("姓    名: ")
+        self.studentNameLabel = QLabel("姓    名:")
         self.studentNameLabel.setFont(font)
         self.studentNameLineEdit = QLineEdit()
         self.studentNameLineEdit.setFixedHeight(32)
@@ -56,7 +73,7 @@ class SignUpWidget(QWidget):
         lineEditFont.setPixelSize(10)
 
         # Row3
-        self.passwordLabel = QLabel("密    码: ")
+        self.passwordLabel = QLabel("密    码:")
         self.passwordLabel.setFont(font)
         self.passwordLineEdit = QLineEdit()
         self.passwordLineEdit.setFixedWidth(180)
@@ -67,7 +84,7 @@ class SignUpWidget(QWidget):
         self.formlayout.addRow(self.passwordLabel, self.passwordLineEdit)
 
         # Row4
-        self.passwordConfirmLabel = QLabel("确认密码: ")
+        self.passwordConfirmLabel = QLabel("确认密码:")
         self.passwordConfirmLabel.setFont(font)
         self.passwordConfirmLineEdit = QLineEdit()
         self.passwordConfirmLineEdit.setFixedWidth(180)
@@ -86,7 +103,7 @@ class SignUpWidget(QWidget):
         widget = QWidget()
         widget.setLayout(self.formlayout)
         widget.setFixedHeight(250)
-        widget.setFixedWidth(300)
+        widget.setFixedWidth(300) #如果不显示，这个可写成320，或者把Label的文字宽度调小点
         self.Hlayout = QHBoxLayout()
         self.Hlayout.addWidget(widget, Qt.AlignCenter)
         widget = QWidget()
