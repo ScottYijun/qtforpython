@@ -142,7 +142,8 @@ class UserDbManager(DbManager):
         fetchedData = self.cursor.execute("SELECT * FROM user WHERE userid = '%s'" % (userid))
         byUserid = fetchedData.fetchall()#通过fetchall接受全部数据，是一个list,list的每个元素是tuple类型数据
         print(byUserid)
-        return fetchedData.fetchall()
+        #return fetchedData.fetchall()
+        return byUserid
 
     def getAdmineUserInfo(self):
         """获取管理员用户"""
