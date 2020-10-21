@@ -102,6 +102,41 @@ class DbManager(object):
         self.db.commit()
         self.db.close()
 
+
+class UserBookManager(DbManager):
+    def __init__(self, database=dbpath, *args):
+        super().__init__(database, *args)
+        self.initDb()
+
+    def initDb(self):
+        self.createTable(createUser_BookTableString)
+
+    def queryBorrowBook(self, userid, BookID):
+        result = self.cursor.execute(
+            "SELECT * FROM User_Book WHERE userid='%s' AND BookID='%s' AND BorrowState=1" % (userid, BookID))
+        return result.fetchall()
+
+    def countBorrowNum(self, userid):
+        result = self.cursor.execute(
+            " SELECT COUNT(userid) FROM User_Book WHERE userid='%s' AND BorrowState=1" % (userid))
+        return result.fetchall()
+
+    def borrowStatus(self, userid, BookID):
+        result = self.cursor.execute(
+            "SELECT COUNT(userid) FROM User_Book WHERE  userid='%s' AND BookID='%s' AND BorrowState=1" % (
+                userid, BookID))
+        return result.fetchall()
+
+    def borrowOrReturnBook(self, userid, BookID, timenow, borrowflag=1):
+        if borrowflag == 1:
+            result = self.cursor.execute(
+                "INSERT INTO User_Book VALUES ('%s','%s','%s',NULL,1)" % (userid, BookID, timenow))
+        else:
+            result = self.cursor.execute(
+                "UPDATE User_Book SET ReturnTime='%s',BorrowState=0 WHERE userID='%s' AND BookID='%s' AND BorrowState=1" % (
+                timenow, userid, BookID))
+        self.db.commit()
+
 """
 用户类，实现初始化数据，添加普通用户，添加管理员，查询用户信息，查询管理员，更新密码，借书还书
 """

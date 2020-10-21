@@ -18,6 +18,9 @@ import qdarkstyle
 from PyQt5.QtSql import *
 import hashlib
 from initDB import UserDbManager #从initDB.py文件中导入UserDbManager类
+
+#from db.userInfoManager import UserDbManager
+
 import images #这是本地资源包，存放的图片资源，
 
 
